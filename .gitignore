@@ -1,0 +1,7 @@
+*$py.class
+*.egg-info
+*.log
+*.py[cod]
+.eggs
+__pycache__/
+venv
