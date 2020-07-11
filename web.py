@@ -2,14 +2,17 @@
 import os
 
 import flask
+import redis
 
 APP = flask.Flask('suk-r-us')
 APP.config['SECRET_KEY'] = os.urandom(24)
+REDIS = redis.from_url(os.getenv('REDISTOGO_URL', 'redis://localhost:6379'))
 
 
 @APP.route("/health", methods=['GET'])
 def contact_handler():
     'Say hi.'
+    REDIS.lpush('hi', '1')
     return 'hi'
 
 
