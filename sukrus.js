@@ -1,9 +1,22 @@
 /* jshint esversion: 8 */
 /* globals google */
-(function(exposed){'use strict';
+(async(exposed) => {'use strict';
+const call = async (path, data) => await (await fetch(path, data ? {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+} : {
+    method: 'GET'
+})).json();
+
+const f = async () => {
+    console.log('hi');
+    console.log(await call('/create_game', {game_id: 'test'}));
+    console.log(await call('/open_games'));
+};
+f();
 
 // Initialization callback called from google once the API is done loading, so it has to be exposed.
 function initMap() {
+    return;
     const map = new google.maps.Map(document.getElementById("map"), {zoom:15});
     navigator.geolocation.getCurrentPosition(function(position){
         let current = {
@@ -16,4 +29,5 @@ function initMap() {
 }
 
 exposed.initMap = initMap;
-})((this.window = this.window || {}));
+exposed.call = call;
+})(this.window);
