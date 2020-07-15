@@ -9,7 +9,7 @@ const call = async (path, data) => await (await fetch(path, data ? {
 
 const f = async () => {
     console.log('hi');
-    console.log(await call('/create_game', {game_id: 'test'}));
+    console.log(await call('/create_game', {player_id: 'test', game_id: 'test'}));
     console.log(await call('/open_games'));
 };
 f();
