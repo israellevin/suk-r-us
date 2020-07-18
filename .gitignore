@@ -4,4 +4,5 @@
 *.py[cod]
 .eggs
 __pycache__/
+tags
 venv

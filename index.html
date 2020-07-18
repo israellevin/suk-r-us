@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <title>suk-R-us</title>
     <link rel="stylesheet" href="style.css">
+    <script src="sukrus.js" defer></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdnUkvS7Z8n9Hd3JG-jdC6liMzRQDyi7M&callback=initMap&libraries=&v=weekly"
       defer
     ></script>
-    <script src="sukrus.js"></script>
 </head>
 <body>
     <div id="content">
-        <div id="control"></div>
+        <div id="control">
+            <img class="player offline" id="sakura" alt="Sakura" src="sakura.png">
+            <img class="player offline" id="superman" alt="Superman" src="superman.png">
+            <span id="statusline"></span>
+        </div>
     </div>
     <div id="map"></div>
 </body>

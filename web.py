@@ -75,14 +75,46 @@ def call(handler=None, required_fields=None):
     return _call
 
 
+@APP.route("/register_player", methods=['POST'])
+@call({'player_id', 'image_uri'})
+def register_player(player_id, image_uri):
+    'Register a player.'
+    REDIS.set(f"player-{player_id}", image_uri)
+    return dict()
+
+
+@APP.route("/get_player", methods=['GET'])
+@call({'player_id'})
+def get_player(player_id):
+    'Get player details.'
+    return dict(image_uri=REDIS.get(f"player-{player_id}"))
+
+
+def _join_game(player_id, game_id, new_game=False):
+    'Join a game - private function used by create_game and join_game.'
+    num_of_participants = REDIS.llen(f"game-{game_id}-participants")
+    if not new_game and num_of_participants < 1:
+        return dict(success=False, status=400, error=f"game {game_id} does not exist")
+    if num_of_participants > 1:
+        return dict(success=False, status=400, error=f"game {game_id} is full")
+    REDIS.rpush(f"game-{game_id}-participants", player_id)
+    return dict()
+
+
 @APP.route("/create_game", methods=['POST'])
 @call({'player_id', 'game_id'})
 def create_game(player_id, game_id):
     'Create a game and join it.'
     if REDIS.sadd('games', game_id) != 1:
         return dict(success=False, status=400, error=f"game {game_id} already exists")
-    REDIS.rpush(f"game-{game_id}-participants", player_id)
-    return dict()
+    return _join_game(player_id, game_id, new_game=True)
+
+
+@APP.route("/join_game", methods=['POST'])
+@call({'player_id', 'game_id'})
+def join_game_(player_id, game_id):
+    'Join an existing game.'
+    return _join_game(player_id, game_id)
 
 
 @APP.route("/open_games", methods=['GET'])

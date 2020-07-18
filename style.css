@@ -4,6 +4,10 @@ html, body {
   padding: 0;
 }
 
+.offline {
+    opacity: 0.4;
+}
+
 #map {
   height: 80%;
 }
