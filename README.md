@@ -1,6 +1,8 @@
 # suk-R-us
 A sweet game in the making.
 
+Check it out at: https://suk-r-us.herokuapp.com/
+
 ## Setup a local environment (from bash)
 requirements: python3 and a local redis server running on port 6379
 - `python3 -m venv venv`
