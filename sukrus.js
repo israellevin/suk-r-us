@@ -42,7 +42,7 @@ exposed.initMap = () => {
                 lng: position.coords.longitude
             };
             map.setCenter(current);
-            new google.maps.Marker({position: current, icon: 'sup.png', map: map});
+            new google.maps.Marker({position: current, icon: playerAvatar.src, map: map});
             playerAvatar.classList.remove('offline');
             await call('/register_player', {player_id: playerId, image_uri: playerAvatar.src});
             await call('/create_game', {player_id: playerId, game_id: gameId});
