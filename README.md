@@ -3,6 +3,11 @@ A sweet game in the making.
 
 Check it out at: https://suk-r-us.herokuapp.com/
 
+Thanks:
+- [Masashi Kishimoto](https://twitter.com/thekishimoto) for Sakura
+- [Jerry Siegel](https://en.wikipedia.org/wiki/Jerry_Siegel) and [Joe Shuster](https://en.wikipedia.org/wiki/Joe_Shuster) for Superman
+- Thomas Schelling for [Schelling points](http://elcenia.com/iamapirate/schelling.pdf)
+
 ## Setup a local environment (from bash)
 requirements: python3 and a local redis server running on port 6379
 - `python3 -m venv venv`
