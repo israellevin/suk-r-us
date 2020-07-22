@@ -76,28 +76,21 @@ def call(handler=None, required_fields=None):
 
 
 @APP.route("/register_player", methods=['POST'])
-@call({'player_id', 'image_uri'})
-def register_player(player_id, image_uri):
+@call({'player_id', 'character'})
+def register_player(player_id, character):
     'Register a player.'
-    REDIS.set(f"player-{player_id}", image_uri)
+    REDIS.set(f"player-{player_id}", character)
     return dict()
-
-
-@APP.route("/get_player", methods=['GET'])
-@call({'player_id'})
-def get_player(player_id):
-    'Get player details.'
-    return dict(image_uri=REDIS.get(f"player-{player_id}"))
 
 
 def _join_game(player_id, game_id, new_game=False):
     'Join a game - private function used by create_game and join_game.'
-    num_of_participants = REDIS.llen(f"game-{game_id}-participants")
+    num_of_participants = REDIS.scard(f"game-{game_id}-participants")
     if not new_game and num_of_participants < 1:
         return dict(success=False, status=400, error=f"game {game_id} does not exist")
     if num_of_participants > 1:
         return dict(success=False, status=400, error=f"game {game_id} is full")
-    REDIS.rpush(f"game-{game_id}-participants", player_id)
+    REDIS.sadd(f"game-{game_id}-participants", player_id)
     return dict()
 
 
@@ -122,6 +115,33 @@ def join_game_(player_id, game_id):
 def open_games():
     'Get a list of all open games.'
     return dict(games=[game.decode('utf-8') for game in REDIS.smembers('games')])
+
+
+def get_character_and_loved_one(player_id):
+    'Get player character and loved one in that order.'
+    character = REDIS.get(f"player-{player_id}")
+    if character == 'sakura':
+        return character, 'superman'
+    if character == 'superman':
+        return character, 'sakura'
+    raise TypeError(f"unknown character type {character} for player {player_id}")
+
+
+@APP.route("/make_move", methods=['GET'])
+@call({'player_id', 'game_id', 'latitude', 'longitude', 'description'})
+def make_move(player_id, game_id, latitude, longitude, description):
+    'Make a move if possible.'
+    if not REDIS.sismember(f"game-{game_id}-participants", player_id):
+        return dict(success=False, status=400, error=f"player {player_id} is a part of game {game_id}")
+    character, loved_one = get_character_and_loved_one(player_id)
+    character_moves, loved_one_moves = (
+        REDIS.llen(f"game-{game_id}-{participant}-moves") for participant in [character, loved_one])
+    if character_moves > loved_one_moves:
+        return dict(success=False, status=400, error=f"not {character}'s turn in game {game_id}")
+    REDIS.geoadd(f"game-{game_id}-locations", latitude, longitude, f"move-{character_moves}")
+    REDIS.rpush(f"game-{game_id}-{character}-moves", flask.json.dumps(dict(
+        latitude=latitude, longitude=longitude, description=description)))
+    return dict()
 
 
 @APP.route('/')

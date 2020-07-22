@@ -44,7 +44,7 @@ exposed.initMap = () => {
             map.setCenter(current);
             new google.maps.Marker({position: current, icon: playerAvatar.src, map: map});
             playerAvatar.classList.remove('offline');
-            await call('/register_player', {player_id: playerId, image_uri: playerAvatar.src});
+            await call('/register_player', {player_id: playerId, character: playerAvatar.id});
             await call('/create_game', {player_id: playerId, game_id: gameId});
             statusline.textContent = 'Waiting for ' + (playerAvatar.id === 'sakura' ? 'superman' : 'sakura') + ' to join';
         });
