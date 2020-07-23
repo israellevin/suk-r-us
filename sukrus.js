@@ -23,14 +23,29 @@ const playerId = randomString();
 let gameId = randomString();
 
 // Control elements.
+const gamesList = document.getElementById('games');
 const statusline = document.getElementById('statusline');
 const playerAvatars = document.querySelectorAll('.player');
+
+const showGames = async () => {
+    let gamesListItems = [];
+    for(let game of (await call('/open_games')).games){
+        const li = document.createElement('li');
+        li.textContent = game;
+        gamesListItems.push(li);
+    }
+    console.log('removing');
+    gamesList.innerHTML = '';
+    gamesListItems.forEach(item => gamesList.appendChild(item));
+};
+
+setInterval(showGames, 1000);
 
 // Initialization callback called from google once the API is done loading, so it has to be exposed.
 exposed.initMap = () => {
     const map = new google.maps.Map(document.getElementById("map"), {zoom:15});
 
-    // Register player on click.
+    // Register player on avatar click.
     const playerAvatarClick = clickEvent => {
         playerAvatars.forEach(playerAvatar => playerAvatar.removeEventListener('click', playerAvatarClick));
         const playerAvatar = clickEvent.target;
@@ -50,7 +65,7 @@ exposed.initMap = () => {
         });
     };
     playerAvatars.forEach(playerAvatar => playerAvatar.addEventListener('click', playerAvatarClick));
-    statusline.textContent = 'Click on your avatar';
+    statusline.textContent = 'Click on your avatar to start a new game or join an existing one';
 };
 
 })(this.window);
